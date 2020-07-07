@@ -1,9 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
+import conn from "./utils/db";
 
 dotenv.config();
 const app = express();
 
+
+conn();
 app.use(express.urlencoded({ extended: true })); //parse URL-encoded bodies
 app.use(express.json()); //pass JSON bodies
 
