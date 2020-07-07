@@ -1,18 +1,13 @@
-class User {
-  constructor(email, password) {
-    this.email = email;
-    this.password = password;
-  }
+const create = (email, password) => {
+  return `INSERT INTO users(email, password, dateCreated) VALUES('${email}', '${password}', current_timestamp)`;
+};
 
-  create(email, password) {
-    this.email = email;
-    this.password = password;
-    return `INSERT INTO users(email, password, dateCreated) VALUES('${this.email}', '${this.password}', current_timestamp)`;
-  }
-  delete(email) {
-    this.email = email;
-    return `DELETE FROM users WHERE email='${email}'`;
-  }
-}
+const read = () => {
+  return `SELECT * FROM users`;
+};
 
-export default User;
+const remove = (email) => {
+  return `DELETE FROM users WHERE email='${email}'`;
+};
+
+export { create, read, remove };
