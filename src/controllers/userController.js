@@ -1,8 +1,7 @@
-import bcrypt from "bcrypt";
 import db from "../utils/db";
 import { create, read, remove, search } from "../models/userModel";
 import { isBlank, isEmailValid } from "../utils/validator";
-import encrypt from "../middleware/userMiddleware";
+import { encrypt, decrypt } from "../middleware/userMiddleware";
 
 const createUser = async (req, res) => {
   const { email, password } = req.body;
@@ -46,7 +45,7 @@ const deleteUser = async (req, res) => {
       res.status(400).send({ error: "Please provide user email" });
     }
     if (rows.length === 0) {
-      res.status(400).send({ error: "That email not registered" });
+      res.status(400).send({ error: "That email is not registered" });
     } else {
       await db.query(remove(email));
       res.status(200).send({ message: "User deleted" });
@@ -57,4 +56,25 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export { createUser, deleteUser, displayUsers };
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  const { rows } = await db.query(search(email));
+
+  try {
+    if (isBlank(email) || isBlank(password)) {
+      res.status(400).send({ error: "There's a blank field" });
+    }
+    if (rows.length === 0) {
+      res.status(400).send({ error: "That email is not registered" });
+    } else if (!decrypt(password, rows[0].password)) {
+      res.status(401).send({ error: "Wrong password" });
+    } else {
+      res.status(200).send({ message: "Login successful!" });
+    }
+  } catch (error) {
+    res.status(400).send(error);
+    console.log(error);
+  }
+};
+
+export { createUser, deleteUser, displayUsers, login };
