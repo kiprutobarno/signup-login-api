@@ -1,13 +1,11 @@
-const create = (email, password) => {
-  return `INSERT INTO users(email, password, dateCreated) VALUES('${email}', '${password}', current_timestamp)`;
-};
+const create = (email, password) => `INSERT INTO users(email, password, dateCreated) VALUES('${email}', '${password}', current_timestamp)`;
 
-const read = () => {
-  return `SELECT * FROM users`;
-};
+const read = () => 'SELECT * FROM users';
 
-const remove = (email) => {
-  return `DELETE FROM users WHERE email='${email}'`;
-};
+const remove = (email) => `DELETE FROM users WHERE email='${email}'`;
 
-export { create, read, remove };
+const search = (email) => `SELECT * FROM users WHERE email='${email}'`;
+
+export {
+  create, read, remove, search
+};
