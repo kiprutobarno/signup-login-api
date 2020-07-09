@@ -3,7 +3,9 @@ import {
   create, read, remove, search
 } from '../models/userModel';
 import { isBlank, isEmailValid } from '../utils/validator';
-import { encrypt, decrypt, generateJwtToken } from '../middleware/auth';
+import {
+  encrypt, decrypt, generateJwtToken, createCookie
+} from '../middleware/auth';
 
 const createUser = async (req, res) => {
   const { email, password } = req.body;
@@ -71,12 +73,14 @@ const login = async (req, res) => {
     } else if (!decrypt(password, user.password)) {
       res.status(401).send({ error: 'Wrong password' });
     } else {
-      const token = generateJwtToken(user);
+      const generatedData = generateJwtToken(user);
+      const { token } = generatedData;
+      createCookie(res, generatedData);
+
       res.status(200).send({ message: 'Login successful!', token });
     }
   } catch (error) {
     res.status(400).send(error);
-    console.log(error);
   }
 };
 
