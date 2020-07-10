@@ -28,7 +28,7 @@ const createCookie = (res, data) => {
 };
 
 const authMiddleware = async (req, res, next) => {
-  const token = req.headers.cookie.split("=")[1];
+  const token =  req.cookies.token
   try {
     const decoded = jwt.verify(token, process.env.SECRET);
     const { email } = decoded;
