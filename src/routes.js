@@ -3,7 +3,7 @@ import {
   createUser,
   deleteUser,
   displayUsers,
-  login
+  login, logout
 } from './controllers/userController';
 import {authMiddleware} from "./middleware/auth"
 
@@ -12,5 +12,6 @@ routes.post('/users/register', createUser);
 routes.delete('/users/:email', deleteUser);
 routes.get('/users', authMiddleware, displayUsers);
 routes.post('/users/login', login);
+routes.post('/users/logout', logout);
 
 export default routes;
