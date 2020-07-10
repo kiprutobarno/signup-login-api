@@ -1,6 +1,6 @@
 import db from '../utils/db';
 import {
-  create, read, remove, search
+  create, read, remove, search, update
 } from '../models/userModel';
 import { isBlank, isEmail } from '../middleware/validator';
 import {
@@ -92,6 +92,32 @@ const logout = (req, res) => {
   res.status(200).send({ status: 200, message: 'Logout successful!' });
 };
 
+const updatePassword = async (req, res) => {
+  const { email } = req.params;
+  const { password } = req.body;
+
+  try {
+    if (isBlank(email)) {
+      res.status(400).send({ error: 'Please provide user email!' });
+    }
+
+    if (!isEmail(email)) {
+      res.status(400).send({ error: 'Invalid email address!' });
+    }
+
+    const { rows } = await db.query(search(email));
+
+    if (rows.length === 0) {
+      res.status(400).send({ error: 'That email is not registered!' });
+    } else if (email === rows[0].email) {
+      await db.query(update(email, encrypt(password)));
+      res.status(200).send({ message: 'Password succesfully updated!' });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export {
-  createUser, deleteUser, displayUsers, login, logout
+  createUser, deleteUser, displayUsers, login, logout, updatePassword
 };

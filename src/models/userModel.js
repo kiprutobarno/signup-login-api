@@ -6,6 +6,8 @@ const remove = (email) => `DELETE FROM users WHERE email='${email}'`;
 
 const search = (email) => `SELECT * FROM users WHERE email='${email}'`;
 
+const update = (email, password) => `UPDATE users SET password='${password}' WHERE email='${email}'`;
+
 export {
-  create, read, remove, search
+  create, read, remove, search, update
 };
