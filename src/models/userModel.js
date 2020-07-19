@@ -1,4 +1,4 @@
-const create = (email, password) => `INSERT INTO users(email, password, dateCreated) VALUES('${email}', '${password}', current_timestamp)`;
+const create = (email, password) => `INSERT INTO users(email, password, dateCreated) VALUES('${email}', '${password}', localtimestamp)`;
 
 const read = () => 'SELECT * FROM users';
 
@@ -8,6 +8,10 @@ const search = (email) => `SELECT * FROM users WHERE email='${email}'`;
 
 const update = (email, password) => `UPDATE users SET password='${password}' WHERE email='${email}'`;
 
+const searchToken = (token) => `SELECT * FROM users WHERE password_reset_token='${token}'`;
+
+const updateToken = (email, token, expiry) => `UPDATE users SET password_reset_token='${token}', password_reset_token_expiry='${expiry}' WHERE email='${email}'`;
+
 export {
-  create, read, remove, search, update
+  create, read, remove, search, update, searchToken, updateToken
 };
