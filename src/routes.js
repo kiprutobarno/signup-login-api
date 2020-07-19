@@ -3,16 +3,20 @@ import {
   createUser,
   deleteUser,
   displayUsers,
-  login, logout, updatePassword
+  login,
+  logout,
+  updatePassword,
+  forgotPassword
 } from './controllers/userController';
 import { authMiddleware } from './middleware/auth';
 
-const routes = Router();
-routes.post('/auth/register', createUser);
-routes.post('/auth/login', login);
-routes.post('/auth/logout', logout);
-routes.put('auth/passwordUpdate/:email', authMiddleware, updatePassword);
-routes.get('/users', authMiddleware, displayUsers);
-routes.delete('/users/:email', deleteUser);
+const router = Router();
+router.post('/auth/register', createUser);
+router.post('/auth/login', login);
+router.post('/auth/logout', logout);
+router.post('/auth/forgot/:email', forgotPassword);
+router.put('auth/passwordUpdate/:email', authMiddleware, updatePassword);
+router.get('/users', authMiddleware, displayUsers);
+router.delete('/users/:email', deleteUser);
 
-export default routes;
+export default router;

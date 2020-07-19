@@ -1,6 +1,12 @@
+import crypto from 'crypto';
 import db from '../utils/db';
 import {
-  create, read, remove, search, update
+  create,
+  read,
+  remove,
+  search,
+  update,
+  updateToken
 } from '../models/userModel';
 import { isBlank, isEmail } from '../middleware/validator';
 import {
@@ -9,6 +15,7 @@ import {
   generateJwtToken,
   createCookie
 } from '../middleware/auth';
+import transporter from '../services/mailer';
 
 const createUser = async (req, res) => {
   const { email, password } = req.body;
@@ -118,6 +125,40 @@ const updatePassword = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  const { email } = req.params;
+  const token = crypto.randomBytes(20).toString('hex');
+  const { rows } = await db.query(search(email));
+  const user = rows[0];
+  const expiry = new Date(Date.now() + 14400000).toGMTString();
+  await db.query(updateToken(user.email, token, expiry));
+
+  const options = {
+    to: 'barxwells@gmail.com',
+    from: 'barxwells@gmail.com',
+    subject: 'Password Reset',
+    text:
+      `${
+        'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n'
+        + 'Please click on the following link, or paste this into your browser to complete the process:\n\n'
+        + 'http://'
+      }${req.headers.host}/auth/reset/${token}\n\n`
+      + 'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+  };
+  transporter.sendMail(options, (error) => {
+    if (error) {
+      console.log(error);
+    }
+  });
+  res.status(200).send({ message: 'success' });
+};
+
 export {
-  createUser, deleteUser, displayUsers, login, logout, updatePassword
+  createUser,
+  deleteUser,
+  displayUsers,
+  login,
+  logout,
+  updatePassword,
+  forgotPassword
 };
