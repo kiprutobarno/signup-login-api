@@ -5,8 +5,9 @@ import {
   displayUsers,
   login,
   logout,
-  updatePassword,
-  forgotPassword
+  resetPassword,
+  forgotPassword,
+  resetToken
 } from './controllers/userController';
 import { authMiddleware } from './middleware/auth';
 
@@ -15,7 +16,8 @@ router.post('/auth/register', createUser);
 router.post('/auth/login', login);
 router.post('/auth/logout', logout);
 router.post('/auth/forgot/:email', forgotPassword);
-router.put('auth/passwordUpdate/:email', authMiddleware, updatePassword);
+router.post('/auth/reset/:token', resetPassword);
+router.get('/auth/reset/:token', resetToken);
 router.get('/users', authMiddleware, displayUsers);
 router.delete('/users/:email', deleteUser);
 

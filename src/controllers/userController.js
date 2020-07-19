@@ -5,8 +5,9 @@ import {
   read,
   remove,
   search,
-  update,
-  updateToken
+  updateToken,
+  searchToken,
+  updatePassword
 } from '../models/userModel';
 import { isBlank, isEmail } from '../middleware/validator';
 import {
@@ -99,32 +100,6 @@ const logout = (req, res) => {
   res.status(200).send({ status: 200, message: 'Logout successful!' });
 };
 
-const updatePassword = async (req, res) => {
-  const { email } = req.params;
-  const { password } = req.body;
-
-  try {
-    if (isBlank(email)) {
-      res.status(400).send({ error: 'Please provide user email!' });
-    }
-
-    if (!isEmail(email)) {
-      res.status(400).send({ error: 'Invalid email address!' });
-    }
-
-    const { rows } = await db.query(search(email));
-
-    if (rows.length === 0) {
-      res.status(400).send({ error: 'That email is not registered!' });
-    } else if (email === rows[0].email) {
-      await db.query(update(email, encrypt(password)));
-      res.status(200).send({ message: 'Password succesfully updated!' });
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 const forgotPassword = async (req, res) => {
   const { email } = req.params;
   const token = crypto.randomBytes(20).toString('hex');
@@ -153,6 +128,44 @@ const forgotPassword = async (req, res) => {
   res.status(200).send({ message: 'success' });
 };
 
+const resetToken = async (req, res) => {
+  const { token } = req.params;
+  const { rows } = await db.query(searchToken(token));
+  const user = rows[0];
+  if (user) {
+    req.user = user;
+    res.status(200).send({ message: 'token retrieved successfully', token });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { rows } = await db.query(searchToken(token));
+  const now = new Date(Date.now() + 10800000).toGMTString();
+  const user = rows[0];
+  const tokenExpiry = Date.parse(user.password_reset_token_expiry) + 10800000;
+  console.log(Date.parse(now) > tokenExpiry);
+  console.log(`Now:${now}`);
+  console.log(`Expiry:${new Date(tokenExpiry).toGMTString()}`);
+  if (!user) {
+    res.status(400).send({ message: 'Invalid password reset token' });
+  } else if (Date.parse(now) > tokenExpiry) {
+    res.status(400).send({ message: 'Password reset token is expired!' });
+  } else {
+    user.password = req.body.password;
+    user.password_reset_token_expiry = now;
+    console.log(`Expiry:${new Date(tokenExpiry).toGMTString()}`);
+    await db.query(
+      updatePassword(
+        user.email,
+        encrypt(user.password),
+        user.password_reset_token_expiry
+      )
+    );
+    res.status(200).send({ message: 'password updated successfully' });
+  }
+};
+
 export {
   createUser,
   deleteUser,
@@ -160,5 +173,7 @@ export {
   login,
   logout,
   updatePassword,
-  forgotPassword
+  forgotPassword,
+  resetPassword,
+  resetToken
 };
