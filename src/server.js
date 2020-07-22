@@ -1,8 +1,9 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cookieParser from 'cookie-parser';
-import cors from 'cors';
-import router from './routes';
+import express from "express";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import createTable from "./utils/table";
+import router from "./routes";
 
 dotenv.config();
 const app = express();
@@ -12,6 +13,7 @@ app.use(express.json()); // parse JSON bodies
 app.use(cookieParser()); // parse cookies in headers
 app.use(cors());
 
+createTable();
 app.use(router);
 
 app.listen(process.env.PORT, () => {

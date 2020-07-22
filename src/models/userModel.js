@@ -1,4 +1,4 @@
-const create = (email, password) => `INSERT INTO users(email, password, dateCreated) VALUES('${email}', '${password}', localtimestamp)`;
+const create = (email, password) => `INSERT INTO users(email, password, date_created) VALUES('${email}', '${password}', localtimestamp)`;
 
 const read = () => 'SELECT * FROM users';
 
