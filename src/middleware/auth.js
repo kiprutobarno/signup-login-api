@@ -13,7 +13,7 @@ const decrypt = (password, encryptedPassword) => bcrypt.compareSync(password, en
 const generateJwtToken = (user) => {
   const expiresIn = 60 * 60;
   const secret = process.env.SECRET;
-  const data = { id: user.userid, email: user.email };
+  const data = { id: user.id, email: user.email, isAdmin: user.is_admin };
   return { expiresIn, token: jwt.sign(data, secret, { expiresIn }) };
 };
 

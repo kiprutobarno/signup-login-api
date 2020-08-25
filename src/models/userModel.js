@@ -1,4 +1,9 @@
-const create = (email, password) => `INSERT INTO users(email, password, date_created) VALUES('${email}', '${password}', localtimestamp)`;
+const create = (email, password, isAdmin) => {
+  if (isAdmin === undefined) {
+    isAdmin = false;
+  }
+  return `INSERT INTO users(email, password, date_created, is_admin) VALUES('${email}', '${password}', localtimestamp, '${isAdmin}')`;
+};
 
 const read = () => 'SELECT * FROM users';
 
