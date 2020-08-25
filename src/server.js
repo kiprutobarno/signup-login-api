@@ -1,9 +1,9 @@
-import express from "express";
-import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import createTable from "./utils/table";
-import router from "./routes";
+import express from 'express';
+import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import createTable from './utils/table';
+import router from './routes';
 
 dotenv.config();
 const app = express();

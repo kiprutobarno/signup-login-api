@@ -19,7 +19,7 @@ import {
 import transporter from '../services/mailer';
 
 const createUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, isAdmin } = req.body;
   try {
     if (isBlank(email) || isBlank(password)) {
       res.status(400).send({ error: "There's a blank field!" });
@@ -27,7 +27,7 @@ const createUser = async (req, res) => {
     if (!isEmail(email)) {
       res.status(400).send({ error: 'Invalid email address!' });
     } else {
-      await db.query(create(email, encrypt(password)));
+      await db.query(create(email, encrypt(password), isAdmin));
       res.status(201).send({ message: 'User succesfully created!' });
     }
   } catch (error) {
@@ -88,7 +88,7 @@ const login = async (req, res) => {
     if (!user) {
       res.status(400).send({ error: 'That email is not registered!' });
     } else if (!decrypt(password, user.password)) {
-      res.status(401).send({ error: 'Wrong password' });
+      res.status(401).send({ error: 'Wrong password!' });
     } else {
       const generatedData = generateJwtToken(user);
       const { token } = generatedData;
