@@ -11,23 +11,15 @@ const encrypt = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 const decrypt = (password, encryptedPassword) => bcrypt.compareSync(password, encryptedPassword);
 
 const generateJwtToken = (user) => {
-  const expiresIn = 60 * 60;
+  const expiresIn = 60 * 10;
   const secret = process.env.SECRET;
   const data = { id: user.id, email: user.email, isAdmin: user.is_admin };
   return { expiresIn, token: jwt.sign(data, secret, { expiresIn }) };
 };
 
-const createCookie = (res, data) => {
-  const cookieData = {
-    expiresOn: new Date(Date.now() + data.expiresIn),
-    secure: false,
-    httpOnly: true
-  };
-  return res.cookie('token', data.token, cookieData);
-};
-
 const authMiddleware = async (req, res, next) => {
-  const { token } = req.cookies;
+  const { authorization } = req.headers;
+  const token = authorization.slice(7, authorization.length);
   try {
     const decoded = jwt.verify(token, process.env.SECRET);
     const { email } = decoded;
@@ -44,5 +36,5 @@ const authMiddleware = async (req, res, next) => {
 };
 
 export {
-  encrypt, decrypt, generateJwtToken, createCookie, authMiddleware
+  encrypt, decrypt, generateJwtToken, authMiddleware
 };

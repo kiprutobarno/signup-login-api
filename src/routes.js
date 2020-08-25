@@ -9,6 +9,7 @@ import {
   forgotPassword,
   resetToken
 } from './controllers/userController';
+import { authMiddleware } from './middleware/auth';
 
 const router = Router();
 router.post('/auth/register', createUser);
@@ -17,7 +18,7 @@ router.post('/auth/logout', logout);
 router.post('/auth/forgot/:email', forgotPassword);
 router.post('/auth/reset/:token', resetPassword);
 router.get('/auth/reset/:token', resetToken);
-router.get('/users', displayUsers);
+router.get('/users', authMiddleware, displayUsers);
 router.delete('/users/:email', deleteUser);
 
 export default router;

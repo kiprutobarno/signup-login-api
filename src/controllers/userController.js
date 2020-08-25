@@ -13,8 +13,7 @@ import { isBlank, isEmail } from '../middleware/validator';
 import {
   encrypt,
   decrypt,
-  generateJwtToken,
-  createCookie
+  generateJwtToken
 } from '../middleware/auth';
 import transporter from '../services/mailer';
 
@@ -92,7 +91,7 @@ const login = async (req, res) => {
     } else {
       const generatedData = generateJwtToken(user);
       const { token } = generatedData;
-      createCookie(res, generatedData);
+      // createCookie(res, generatedData);
 
       res.status(200).send({ message: 'Login successful!', token });
     }
