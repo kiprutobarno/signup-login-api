@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   createUser,
   deleteUser,
@@ -7,17 +7,18 @@ import {
   logout,
   resetPassword,
   forgotPassword,
-  resetToken
-} from './controllers/userController';
+  resetToken,
+} from "./controllers/userController";
+import { authMiddleware } from "./middleware/auth";
 
 const router = Router();
-router.post('/auth/register', createUser);
-router.post('/auth/login', login);
-router.post('/auth/logout', logout);
-router.post('/auth/forgot/:email', forgotPassword);
-router.post('/auth/reset/:token', resetPassword);
-router.get('/auth/reset/:token', resetToken);
-router.get('/users', displayUsers);
-router.delete('/users/:email', deleteUser);
+router.post("/auth/register", createUser);
+router.post("/auth/login", login);
+router.post("/auth/logout", logout);
+router.post("/auth/forgot/:email", forgotPassword);
+router.post("/auth/reset/:token", resetPassword);
+router.get("/auth/reset/:token", resetToken);
+router.get("/users", authMiddleware, displayUsers);
+router.delete("/users/:email", deleteUser);
 
 export default router;
