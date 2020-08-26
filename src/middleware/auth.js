@@ -19,7 +19,7 @@ const generateJwtToken = (user) => {
 
 const authMiddleware = async (req, res, next) => {
   const { authorization } = req.headers;
-  const token = authorization.slice(7, authorization.length);
+  const token = authorization.replace('Bearer ', '');
   try {
     const decoded = jwt.verify(token, process.env.SECRET);
     const { email } = decoded;
