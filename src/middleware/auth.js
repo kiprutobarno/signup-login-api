@@ -1,14 +1,15 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-import { search } from '../models/userModel';
-import db from '../utils/db';
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import { search } from "../models/userModel";
+import db from "../utils/db";
 
 dotenv.config();
 
 const encrypt = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 
-const decrypt = (password, encryptedPassword) => bcrypt.compareSync(password, encryptedPassword);
+const decrypt = (password, encryptedPassword) =>
+  bcrypt.compareSync(password, encryptedPassword);
 
 const generateJwtToken = (user) => {
   const expiresIn = 60 * 10;
@@ -19,7 +20,8 @@ const generateJwtToken = (user) => {
 
 const authMiddleware = async (req, res, next) => {
   const { authorization } = req.headers;
-  const token = authorization.slice(7, authorization.length);
+  // const token = authorization.slice(7, authorization.length);
+  const token = authorization.replace("Bearer ", "");
   try {
     const decoded = jwt.verify(token, process.env.SECRET);
     const { email } = decoded;
@@ -34,6 +36,4 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-export {
-  encrypt, decrypt, generateJwtToken, authMiddleware
-};
+export { encrypt, decrypt, generateJwtToken, authMiddleware };
