@@ -10,11 +10,7 @@ import {
   updatePassword
 } from '../models/userModel';
 import { isBlank, isEmail } from '../middleware/validator';
-import {
-  encrypt,
-  decrypt,
-  generateJwtToken
-} from '../middleware/auth';
+import { encrypt, decrypt, generateJwtToken } from '../middleware/auth';
 import transporter from '../services/mailer';
 
 const createUser = async (req, res) => {
@@ -49,7 +45,6 @@ const displayUsers = async (req, res) => {
     }
   } catch (error) {
     res.status(400).send(error);
-    console.log(error);
   }
 };
 
@@ -69,7 +64,6 @@ const deleteUser = async (req, res) => {
     }
   } catch (error) {
     res.status(400).send(error);
-    console.log(error);
   }
 };
 
@@ -91,7 +85,6 @@ const login = async (req, res) => {
     } else {
       const generatedData = generateJwtToken(user);
       const { token } = generatedData;
-      // createCookie(res, generatedData);
 
       res.status(200).send({ message: 'Login successful!', token });
     }
@@ -134,7 +127,7 @@ const forgotPassword = async (req, res) => {
       };
       transporter.sendMail(options, (error) => {
         if (error) {
-          console.log(error);
+          res.status(400).send({ error });
         }
       });
       res.status(200).send({ message: 'Success' });
