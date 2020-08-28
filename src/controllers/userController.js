@@ -18,8 +18,7 @@ const createUser = async (req, res) => {
   try {
     if (isBlank(email) || isBlank(password)) {
       res.status(400).send({ error: "There's a blank field!" });
-    }
-    if (!isEmail(email)) {
+    } else if (!isEmail(email)) {
       res.status(400).send({ error: 'Invalid email address!' });
     } else {
       await db.query(create(email, encrypt(password), isAdmin));
@@ -33,7 +32,7 @@ const createUser = async (req, res) => {
   }
 };
 
-const displayUsers = async (req, res) => {
+const displayUsers = async (req, res, next) => {
   try {
     const { rows } = await db.query(read());
     const users = rows[0];
@@ -44,41 +43,38 @@ const displayUsers = async (req, res) => {
       res.status(200).send(rows);
     }
   } catch (error) {
-    res.status(400).send(error);
+    next(error);
   }
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res, next) => {
   const { email } = req.params;
   const { rows } = await db.query(search(email));
   const user = rows[0];
   try {
     if (isBlank(email)) {
       res.status(400).send({ error: 'Please provide user email!' });
-    }
-    if (!user) {
+    } else if (!user) {
       res.status(400).send({ error: 'That email is not registered!' });
     } else {
       await db.query(remove(email));
       res.status(200).send({ message: 'User succefully deleted' });
     }
   } catch (error) {
-    res.status(400).send(error);
+    next(error);
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
   const { rows } = await db.query(search(email));
   const user = rows[0];
   try {
     if (isBlank(email) || isBlank(password)) {
       res.status(400).send({ error: "There's a blank field!" });
-    }
-    if (!isEmail(email)) {
+    } else if (!isEmail(email)) {
       res.status(400).send({ error: 'Invalid email address!' });
-    }
-    if (!user) {
+    } else if (!user) {
       res.status(400).send({ error: 'That email is not registered!' });
     } else if (!decrypt(password, user.password)) {
       res.status(401).send({ error: 'Wrong password!' });
@@ -89,7 +85,7 @@ const login = async (req, res) => {
       res.status(200).send({ message: 'Login successful!', token });
     }
   } catch (error) {
-    res.status(400).send(error);
+    next(error);
   }
 };
 
@@ -98,7 +94,7 @@ const logout = (req, res) => {
   res.status(200).send({ status: 200, message: 'Logout successful!' });
 };
 
-const forgotPassword = async (req, res) => {
+const forgotPassword = async (req, res, next) => {
   const { email } = req.params;
   const token = crypto.randomBytes(20).toString('hex');
   try {
@@ -133,7 +129,7 @@ const forgotPassword = async (req, res) => {
       res.status(200).send({ message: 'Success' });
     }
   } catch (error) {
-    res.status(400).send({ error });
+    next(error);
   }
 };
 
